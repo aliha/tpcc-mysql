@@ -4,7 +4,7 @@
 
 
 
-LIBS=		`mysql_config --libs_r` -lrt
+LIBS=		-l pthread -lm `mysql_config --libs_r` -lrt
 
 INC=		-I. `mysql_config --include`
 
