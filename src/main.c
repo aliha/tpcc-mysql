@@ -40,6 +40,7 @@ char report_file[DB_STRING_MAX]="";
 FILE *freport_file=NULL;
 char trx_file[DB_STRING_MAX]="";
 FILE *ftrx_file=NULL;
+char experiment_tags[DB_STRING_MAX] = "";
 
 int num_ware;
 int num_conn;
@@ -167,7 +168,7 @@ int main( int argc, char *argv[] )
 
   /* Parse args */
 
-    while ( (c = getopt(argc, argv, "h:P:d:u:p:w:c:r:l:i:f:t:m:o:S:0:1:2:3:4:")) != -1) {
+    while ( (c = getopt(argc, argv, "h:P:d:u:p:w:c:r:l:i:f:t:m:n:o:S:0:1:2:3:4:")) != -1) {
         switch (c) {
         case 'h':
             printf ("option h with value '%s'\n", optarg);
@@ -248,6 +249,10 @@ int main( int argc, char *argv[] )
         case '4':
             printf ("option 4 (response time limit for transaction 4) '%s'\n", optarg);
             rt_limit[4] = atoi(optarg);
+            break;
+        case 'n':
+            printf("Experiment tag (will be inserted in the output results)'%s'\n", optarg);
+            strncpy(experiment_tags, optarg, DB_STRING_MAX);
             break;
         case '?':
     	    printf("Usage: tpcc_start -h server_host -P port -d database_name -u mysql_user -p mysql_password -w warehouses -c connections -r warmup_time -l running_time -i report_interval -f report_file -t trx_file\n");
@@ -629,6 +634,59 @@ int main( int argc, char *argv[] )
   f = (float)(success[0] + late[0]) * 60.0
     / (float)((measure_time / PRINT_INTERVAL) * PRINT_INTERVAL);
   printf("                 %.3f TpmC\n",f);
+
+  //printing result file
+//  experiment_tags
+  char * result_filename = "results.csv";
+  FILE *result_file = fopen(result_filename, "w");
+  if (result_file == NULL)
+  {
+      printf("Error opening file!\n");
+      exit(1);
+  }
+  
+  fprintf(result_file, "%s,", experiment_tags);
+
+  float avg_successful_trans = .0;
+  float avg_late_tran = .0;
+  float avg_retry = .0;
+  float avg_failure = .0;
+  float avg_response_time = .0;
+
+  int submitted_trans[5] = { 0, 0, 0, 0, 0 };
+  int total_num_trans = 0;
+  int total_num_non_failed_trans = 0;
+  for (i = 0; i < 5; i++) {
+      submitted_trans[i] = (success[i] + late[i] + failure[i]);
+      total_num_trans += submitted_trans[i];
+      total_num_non_failed_trans += (success[i] + late[i]);
+  }
+  for (i = 0; i < 5; i++) {
+      avg_successful_trans += ((float) success[i]/ total_num_trans);
+      avg_late_tran += ((float) late[i] / total_num_trans);
+      avg_retry += ((float)retry[i] / total_num_trans);
+      avg_failure += ((float)failure[i] / total_num_trans);
+      avg_response_time += ((float)total_rt[i] / total_num_non_failed_trans);
+  }
+
+  fprintf(result_file, "%.3f,%.3f,%.3f,%.3f,%.3f,",
+      avg_successful_trans,
+      avg_late_tran,
+      avg_retry,
+      avg_failure,
+      avg_response_time);
+
+  for (i = 0; i<5; i++) {
+      fprintf(result_file, "%d,%d,%d,%d,%d,%.2f,%d",
+              i, success[i], late[i], retry[i], failure[i],
+              total_rt[i] / (success[i] + late[i]), rt_limit[i]);
+      if (i < 4)
+          fprintf(result_file, ",");
+  }
+  fprintf(result_file, "\n");
+
+
+
   exit(0);
 
  sqlerr:
