@@ -1,3 +1,7 @@
+Install dependencies:
+`sudo yum install nfs-utils MariaDB-shared  MariaDB-client MariaDB-devel gcc gcc-c++ MariaDB-server MariaDB-client`
+
+
 1. Build binaries
    * `cd src ; make`
    ( you should have mysql_config available in $PATH)
