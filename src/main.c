@@ -645,7 +645,10 @@ int main( int argc, char *argv[] )
       exit(1);
   }
   
+  float measure_time_min = (float) measure_time / 60;
   fprintf(result_file, "%s,", experiment_tags);
+  fprintf(result_file, "%.2f,", measure_time_min);
+
 
   float avg_successful_trans = .0;
   float avg_late_tran = .0;
@@ -669,19 +672,25 @@ int main( int argc, char *argv[] )
       avg_response_time += ((float)total_rt[i] / total_num_non_failed_trans);
   }
 
-  fprintf(result_file, "%.3f,%.3f,%.3f,%.3f,%.3f,%d,%d,",
+
+  fprintf(result_file, "%.3f,%.3f,%.3f,%.3f,%.3f,%0.2f,%.2f,",
       avg_successful_trans,
       avg_late_tran,
       avg_retry,
       avg_failure,
       avg_response_time,
-      total_num_trans,
-      total_num_non_failed_trans);
+      (float)total_num_trans/ measure_time_min,
+      (float)total_num_non_failed_trans/ measure_time_min);
 
   for (i = 0; i<5; i++) {
-      fprintf(result_file, "%d,%d,%d,%d,%d,%.2f,%d",
-              i, success[i], late[i], retry[i], failure[i],
-              total_rt[i] / (success[i] + late[i]), rt_limit[i]);
+      fprintf(result_file, "%d,%0.2f,%0.2f,%0.2f,%0.2f,%.2f,%d",
+          i,
+          (float)success[i] / measure_time_min,
+          (float)late[i] / measure_time_min,
+          (float)retry[i] / measure_time_min,
+          (float)failure[i] / measure_time_min,
+          total_rt[i] / (success[i] + late[i]),
+          rt_limit[i]);
       if (i < 4)
           fprintf(result_file, ",");
   }
