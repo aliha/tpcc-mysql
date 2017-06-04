@@ -1,5 +1,8 @@
 Install dependencies:
+
 `sudo yum install nfs-utils MariaDB-shared  MariaDB-client MariaDB-devel gcc gcc-c++ MariaDB-server MariaDB-client`
+
+(see [here](https://mariadb.com/kb/en/mariadb/yum/) for adding MariaDB's yum repository)
 
 
 1. Build binaries
