@@ -669,12 +669,14 @@ int main( int argc, char *argv[] )
       avg_response_time += ((float)total_rt[i] / total_num_non_failed_trans);
   }
 
-  fprintf(result_file, "%.3f,%.3f,%.3f,%.3f,%.3f,",
+  fprintf(result_file, "%.3f,%.3f,%.3f,%.3f,%.3f,%d,%d,",
       avg_successful_trans,
       avg_late_tran,
       avg_retry,
       avg_failure,
-      avg_response_time);
+      avg_response_time,
+      total_num_trans,
+      total_num_non_failed_trans);
 
   for (i = 0; i<5; i++) {
       fprintf(result_file, "%d,%d,%d,%d,%d,%.2f,%d",
