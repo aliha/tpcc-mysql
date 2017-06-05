@@ -644,12 +644,27 @@ int main( int argc, char *argv[] )
       printf("Error opening file!\n");
       exit(1);
   }
-  
+
   float measure_time_min = (float) measure_time / 60;
+
+//---------------------------------------------------
+//print summary of the experiment in a csv file
+//---------------------------------------------------
+
+  time_t cur_time;
+  char date_time_str[26];
+  struct tm* tm_info;
+
+  time(&cur_time);
+  tm_info = localtime(&cur_time);
+  strftime(date_time_str, 26, "%Y-%m-%d %H:%M:%S", tm_info);
+
+  
+  fprintf(result_file, "%s,", date_time_str);
   fprintf(result_file, "%s,", experiment_tags);
   fprintf(result_file, "%.2f,", measure_time_min);
 
-
+  
   float avg_successful_trans = .0;
   float avg_late_tran = .0;
   float avg_retry = .0;
