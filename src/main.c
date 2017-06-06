@@ -688,14 +688,15 @@ int main( int argc, char *argv[] )
   }
 
 
-  fprintf(result_file, "%.3f,%.3f,%.3f,%.3f,%.3f,%0.2f,%.2f,",
+  fprintf(result_file, "%.3f,%.3f,%.3f,%.3f,%.3f,%0.2f,%.2f,%.2f,",
       avg_successful_trans,
       avg_late_tran,
       avg_retry,
       avg_failure,
       avg_response_time,
       (float)total_num_trans/ measure_time_min,
-      (float)total_num_non_failed_trans/ measure_time_min);
+      (float)total_num_non_failed_trans/ measure_time_min,
+	  (float)(success[0]+late[0])/measure_time_min);
 
   for (i = 0; i<5; i++) {
       fprintf(result_file, "%d,%0.2f,%0.2f,%0.2f,%0.2f,%.2f,%d",
